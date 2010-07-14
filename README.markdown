@@ -5,12 +5,10 @@ version of whatever enumerator you throw at it (`each` by default).
 
 ## Use
 
+    # You like #each? You'll love...err..probably like #threach
     require 'rubygems'
     require 'threach'
     
-    # You like #each? You'll love...err..probably like #threach
-    load 'threach.rb'
-
     # Process with 2 threads. It assumes you want 'each'
     # as your iterator.
     (1..10).threach(2) {|i| puts i.to_s}  
