@@ -3,6 +3,13 @@
 `threach` adds to the Enumerable module to provide a threaded
 version of whatever enumerator you throw at it (`each` by default).
 
+## Installation
+
+`threach` is on gemcutter, so you should just be able to do
+
+    gem install threach
+    # or jruby -S gem install threach
+
 ## Use
 
     # You like #each? You'll love...err..probably like #threach
