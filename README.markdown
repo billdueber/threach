@@ -3,9 +3,16 @@
 `threach` adds to the Enumerable module to provide a threaded
 version of whatever enumerator you throw at it (`each` by default).
 
+## Warning: Deadlocks under JRuby if an exception is thrown
+
+`threach` works fine, so long as nothing goes wrong. In particular, there's no safe way (that I can find; see below) to break out of a `threach` loop without a deadlock under JRuby. This is, shall we say, an Issue. 
+
+Under vanilla ruby, `threach` will exit as expected, but who the hell wants to 
+use `threach` where there are no real threads???
+
 ## Installation
 
-`threach` is on gemcutter, so you should just be able to do
+`threach` is on rubygems.org, so you should just be able to do
 
     gem install threach
     # or jruby -S gem install threach
@@ -39,6 +46,14 @@ version of whatever enumerator you throw at it (`each` by default).
     h.threach(2) do |letter, i|
       puts "#{i}: #{letter}"
     end
+
+## Major problem
+
+I can't figure out how to exit gracefully from within a threach loop. 
+
+Use of `catch` and `throw` seemed like an obvious choice, but they don't work across threads. Then I thought I'd use `catch` within the consumers and throw an error at the producer, but that doesn't work, either. A generic rescue will work under ruby but not jruby. 
+
+If anyone has a solution to what should be a simple problem (and works under both ruby and jruby) boy, would I be grateful.
 
 ## Why and when to use it?
 
