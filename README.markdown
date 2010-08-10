@@ -19,7 +19,7 @@ use `threach` where there are no real threads???
 
 ## Use
 
-    # You like #each? You'll love...err..probably like #threach
+    # You like #each? You'll love...err.."probably like" #threach
     require 'rubygems'
     require 'threach'
     
@@ -49,9 +49,23 @@ use `threach` where there are no real threads???
 
 ## Major problem
 
-I can't figure out how to exit gracefully from within a threach loop. 
+I can't figure out how to exit gracefully from a threach loop. 
 
-Use of `catch` and `throw` seemed like an obvious choice, but they don't work across threads. Then I thought I'd use `catch` within the consumers and throw an error at the producer, but that doesn't work, either. A generic rescue will work under ruby but not jruby. 
+  begin
+    ('a'..'z').threach(2, :each_with_index) do |letter, i|
+      break if i > 10  # will deadlock under jruby; fine under ruby
+      # raise StandardError if i > 10 # deadlock under jruby; find under ruby
+      puts letter
+    end
+  rescue 
+    puts "Rescued; broke out of the loop"
+  end
+
+The `break` under jruby prints "Exception in thread "Thread-1" org.jruby.exceptions.JumpException$BreakJump," but if there's a way to catch that in the enclosing code I sure don't know how. 
+
+Use of `catch` and `throw` seemed like an obvious choice, but they don't work across threads. Then I thought I'd use `catch` within the consumers and throw or raise an error at the producer, but that doesn't work, either. 
+
+I'm clearly up against (or well beyond) my knowledge limitations, here.
 
 If anyone has a solution to what should be a simple problem (and works under both ruby and jruby) boy, would I be grateful.
 
