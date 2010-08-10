@@ -11,16 +11,8 @@ module Enumerable
       consumers = []
       threads.times do |i|
         consumers << Thread.new(i) do |i|
-          catch(:threach_bail) do
-            until (a = bq.pop) === :end_of_data
-              blk.call(*a)
-            end
-          end
-          while bq.size > 0
-            bq.deq
-          end
-          threads.times do
-            bq.enq :end_of_data
+          until (a = bq.pop) === :end_of_data
+            blk.call(*a)
           end
         end          
       end
