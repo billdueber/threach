@@ -71,7 +71,7 @@ Note the "relatively" in front of "painless" up there. The block you pass still 
 
 ## Change Notes
 
-* 0.3 Successfully deal with `break` without deadlocks by using another SizedQueue as, basically, a thread-safe counter of how many threads have finished.
+* 0.3 Successfully deal with `break`  and other nonlocal exits without deadlocks by using another SizedQueue as, basically, a thread-safe counter of how many threads have finished.
 * 0.2 Undo attempts to deal with non-local exit
 * 0.1 first release
 
