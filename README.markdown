@@ -34,6 +34,7 @@
     # as long as it matches the iterator specifed
 
     ('A'..'Z').threach(3, :each_with_index) do |letter, index|
+      sleep rand # to see things come out of order
       puts "#{index}: #{letter}"
     end
 
@@ -71,6 +72,7 @@ Note the "relatively" in front of "painless" up there. The block you pass still 
 
 ## Change Notes
 
+* 0.4 Trying to deal with more errors (e.g., NoMethodError was falling into a bit-bucket somewhere). Still not 100% sure I'm trapping everything correctly.
 * 0.3 Successfully deal with `break`  and other nonlocal exits without deadlocks by using another SizedQueue as, basically, a thread-safe counter of how many threads have finished.
 * 0.2 Undo attempts to deal with non-local exit
 * 0.1 first release
