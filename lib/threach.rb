@@ -73,7 +73,7 @@ module Enumerable
       # bailing if it isn't already done. This can happen when there is a 
       # "break" statement in the passed block.
       doneq = SizedQueue.new(threads)
-      eq = SizedQueue.new(threads)
+      
       # Build up the consumers.
       consumers = []
       threads.times do |i|
@@ -86,15 +86,10 @@ module Enumerable
             # :end_of_data. If it is, stop, because the producer has 
             # run out of work. Otherwise, make the call.
             until (a = bq.pop) === :end_of_data
-              begin
-                blk.call(*a)
-              rescue Exception => e
-                eq << e
-                producer_thread.raise e
-              end
+              blk.call(*a)
             end
           ensure
-            # If we get to this ensure block before closure, it means there was a non-normal
+            # If we get to this ensure block, it means there was a non-normal
             # exit from the block via break. If that's the case, we push another
             # entry into the doneq.
             doneq << :threach_all_done
@@ -111,36 +106,33 @@ module Enumerable
         end          
       end
     
-    # The producer
-      count = 0
-      self.send(iterator) do |*x|
-        bq.push x
-        count += 1
+      # The producer
+      begin
+        count = 0
+        self.send(iterator) do |*x|
+          bq.push x
+          count += 1
+        end
+        # Here we've run out of stuff, so we need to signal to the 
+        # threads that it's time to die. Next time they pop a value
+        # off the queue, it'll be :end_of_data and they'll stop.
+        #
+        # Make sure we push one for each thread!
+        threads.times do 
+          bq << :end_of_data
+        end
+        
+        
+        # That's the end of the producer proper. Now we just join all the
+        # consumer threads and we're set.
+        consumers.each {|t| t.join}
+        
+      rescue ThreachDone => e
+        # Do nothing; if we get here, it's because all the consumer threads
+        # bailed via "break" for some reason.
       end
-      # Here we've run out of stuff, so we need to signal to the 
-      # threads that it's time to die. Next time they pop a value
-      # off the queue, it'll be :end_of_data and they'll stop.
-      #
-      # Make sure we push one for each thread!
-      threads.times do 
-        bq << :end_of_data
-      end
-      
-      
-      # That's the end of the producer proper. Now we just join all the
-      # consumer threads and we're set.
-      consumers.each {|t| t.join}
     end
-  rescue ThreachDone => e
-    # puts "In ThreachDone"
-    # Do nothing; if we get here, it's because all the consumer threads
-    # bailed via "break" for some reason.
   ensure
-    if eq.size > 0
-      e = eq.pop
-      # puts "Got one: #{e}\n"
-      raise e
-    end
   end
     
 end
