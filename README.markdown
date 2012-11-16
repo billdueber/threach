@@ -48,7 +48,7 @@
 * The number you provide to `threach` is the number of *consumer* threads. It's assumed that the time to iterate once on the producer is much less than the work done by a consumer, so you need multiple consumers to keep up.
 * `threach` doesn't magically make your code thread-safe. That's still up to you.
 * Using `break` under JRuby works as expected but writes a log line to STDERR. This is something internal to JRuby and I don't know how to stop it.
-* Throwing exceptions as `raise "oops'` under JRuby is so slow that if you have more than one consumer, the time between the `raise` and the time you exit the `threach` loop is long enough that a *lot* of work will still get done. You need to use use the three-argument form `rails WhateverError, value, nil`. [The last `nil` tells JRuby to not bother making a full stack trace](http://jira.codehaus.org/browse/JRUBY-5534) and reduces the penalty, but you shouldn't use `raise` for flow control; use `catch` (or, if you can, just regular old `break`).
+* Throwing exceptions as `raise "oops'` under JRuby is so slow that if you have more than one consumer, the time between the `raise` and the time you exit the `threach` loop is long enough that a *lot* of work will still get done. You need to use use the three-argument form `raise WhateverError, value, nil`. [The last `nil` tells JRuby to not bother making a full stack trace](http://jira.codehaus.org/browse/JRUBY-5534) and reduces the penalty, but you shouldn't use `raise` for flow control; use `catch` (or, if you can, just regular old `break`).
 
 
 ## Why and when to use it?
