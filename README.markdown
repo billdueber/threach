@@ -1,5 +1,11 @@
 # threach
 
+-----
+
+**Deprecated and archived**. Never really worked reliably. Archived in case I ever want to revisit this space.
+
+-----
+
 `threach` monkeypatches the Enumerable module with a new method `#threach` that provides a threaded version of `#each` (or whatever enumerator you throw at it). It's a very simple producer-consumer model. 
 
 ## Installation
